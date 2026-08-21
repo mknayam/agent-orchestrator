@@ -30,6 +30,18 @@ var expectedUsageTableColumns = map[string][]string{
 	},
 }
 
+func TestMigrateDefaultsSessionInterfaceToChat(t *testing.T) {
+	db := openMigratedTestDB(t)
+
+	var mode string
+	if err := db.QueryRow(`SELECT default_session_mode FROM app_settings WHERE id = 1`).Scan(&mode); err != nil {
+		t.Fatalf("read default session mode: %v", err)
+	}
+	if mode != "chat" {
+		t.Fatalf("default session mode = %q, want chat", mode)
+	}
+}
+
 func TestUsageTablesKeepOnlyDurableCollectionState(t *testing.T) {
 	db := openMigratedTestDB(t)
 	for table, wantColumns := range expectedUsageTableColumns {
